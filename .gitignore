@@ -23,3 +23,26 @@ mono_crash.*.json
 *.exe
 # Uncomment if your project does not version PCK files as runtime dependencies.
 # *.pck
+
+/android/
+
+# .NET build outputs of the test projects
+tests/**/bin/
+tests/**/obj/
+
+# The Python virtual environment of the development tools
+/venv/
+
+# The downloads of tools/download_and_convert_models.py
+/.cache/
+
+# The exported packages, see export_presets.cfg
+/build/
+/dist/
+
+# Python bytecode
+__pycache__/
+
+# The report of the fist classifier names the recordings (and so the people
+# in them); it stays local.
+dev/computer_vision/fist_classifier_report.json

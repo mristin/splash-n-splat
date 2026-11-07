@@ -1,0 +1,146 @@
+[
+  {
+    "file": "rock_0.png",
+    "source": "v2/rock/2022-05-02T21-58-31.016.jpg",
+    "label": "rock",
+    "keras_probabilities": [
+      0.991068959236145,
+      1.250750483450247e-05,
+      0.008511112071573734,
+      0.00040738697862252593
+    ],
+    "keras_argmax": 0
+  },
+  {
+    "file": "rock_1.png",
+    "source": "v2/rock/1576073692.522019.jpg",
+    "label": "rock",
+    "keras_probabilities": [
+      0.9947813153266907,
+      1.2381686246953905e-05,
+      1.0480337550689e-05,
+      0.005195950157940388
+    ],
+    "keras_argmax": 0
+  },
+  {
+    "file": "rock_2.png",
+    "source": "v2/rock/1576013501.065894.jpg",
+    "label": "rock",
+    "keras_probabilities": [
+      0.999875545501709,
+      2.0751870124513516e-06,
+      0.00010290640784660354,
+      1.953717219294049e-05
+    ],
+    "keras_argmax": 0
+  },
+  {
+    "file": "paper_0.png",
+    "source": "v2/paper/2022-05-02T21-47-10.897.jpg",
+    "label": "paper",
+    "keras_probabilities": [
+      7.520736637622871e-12,
+      0.9999796152114868,
+      1.7640790247241966e-05,
+      2.7103540105599677e-06
+    ],
+    "keras_argmax": 1
+  },
+  {
+    "file": "paper_1.png",
+    "source": "v2/paper/2022-05-02T21-46-44.468.jpg",
+    "label": "paper",
+    "keras_probabilities": [
+      3.558437080425098e-15,
+      1.0,
+      2.8800456811084452e-11,
+      1.7118391149040235e-09
+    ],
+    "keras_argmax": 1
+  },
+  {
+    "file": "paper_2.png",
+    "source": "v2/paper/1576072635.9482565.jpg",
+    "label": "paper",
+    "keras_probabilities": [
+      1.670431696611241e-12,
+      1.0,
+      3.0985063403932145e-08,
+      6.931897278406041e-09
+    ],
+    "keras_argmax": 1
+  },
+  {
+    "file": "scissor_0.png",
+    "source": "v2/scissor/1576089038.9567173.jpg",
+    "label": "scissor",
+    "keras_probabilities": [
+      0.00033575756242498755,
+      0.08490115404129028,
+      0.9079610705375671,
+      0.006801934912800789
+    ],
+    "keras_argmax": 2
+  },
+  {
+    "file": "scissor_1.png",
+    "source": "v2/scissor/2022-05-03T15-23-47.673.jpg",
+    "label": "scissor",
+    "keras_probabilities": [
+      0.0006220455979928374,
+      1.8441888016695884e-07,
+      0.999174177646637,
+      0.00020354166917968541
+    ],
+    "keras_argmax": 2
+  },
+  {
+    "file": "scissor_2.png",
+    "source": "v2/scissor/2022-05-02T21-48-50.228.jpg",
+    "label": "scissor",
+    "keras_probabilities": [
+      0.0022650854662060738,
+      9.45366593896324e-07,
+      0.9976467490196228,
+      8.721875201445073e-05
+    ],
+    "keras_argmax": 2
+  },
+  {
+    "file": "unknown_0.png",
+    "source": "v2/_unknown_/2022-04-29T22-55-25.876.jpg",
+    "label": "_unknown_",
+    "keras_probabilities": [
+      0.005820801481604576,
+      0.0005666983197443187,
+      0.001631369930692017,
+      0.9919811487197876
+    ],
+    "keras_argmax": 3
+  },
+  {
+    "file": "unknown_1.png",
+    "source": "v2/_unknown_/2022-04-29T22-53-42.857.jpg",
+    "label": "_unknown_",
+    "keras_probabilities": [
+      0.0010859669419005513,
+      3.119825487374328e-05,
+      1.4044189811102115e-06,
+      0.9988813996315002
+    ],
+    "keras_argmax": 3
+  },
+  {
+    "file": "unknown_2.png",
+    "source": "v2/_unknown_/2022-04-29T22-09-54.478.jpg",
+    "label": "_unknown_",
+    "keras_probabilities": [
+      0.00022981464280746877,
+      1.0671820973584545e-06,
+      5.174230750526476e-07,
+      0.9997685551643372
+    ],
+    "keras_argmax": 3
+  }
+]

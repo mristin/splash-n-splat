@@ -1,0 +1,48 @@
+{
+  "generated": "2026-11-04T22:02:13+00:00",
+  "downloads": {
+    "resources_n.tar.gz": {
+      "url": "https://s3.ap-northeast-2.wasabisys.com/pinto-model-zoo/426_YOLOX-Body-Head-Hand/resources_n.tar.gz",
+      "sha256": "04607eeaa3148ef82ccffd2b6fd9f7ef837467234600c06f3e65cf42bb6ae4f7",
+      "pinned_sha256": "04607eeaa3148ef82ccffd2b6fd9f7ef837467234600c06f3e65cf42bb6ae4f7",
+      "license": "Apache-2.0",
+      "note": "YOLOX-Body-Head-Hand nano, all input resolutions (252 MB)"
+    },
+    "PINTO_426_LICENSE": {
+      "url": "https://raw.githubusercontent.com/PINTO0309/PINTO_model_zoo/286f03194bcbeef991f00054810f6b8d56d44955/426_YOLOX-Body-Head-Hand/LICENSE",
+      "sha256": "cfd84da88aa611197e6597371ddaf5d59593bd4a7df768b6838d45b929ae951a",
+      "pinned_sha256": null,
+      "license": "Apache-2.0",
+      "note": "License of the YOLOX-Body-Head-Hand model"
+    },
+    "rock_paper_scissors.mltk.zip": {
+      "url": "https://github.com/SiliconLabs/mltk/raw/ee2a1fc32dbafa5a2e5af66c54f6b3b62c445f2a/mltk/models/siliconlabs/rock_paper_scissors.mltk.zip",
+      "sha256": "675eebc1b1148563a7bf05fd04c7ffa5fc27d5278c8df5f0161c13fb55b32343",
+      "pinned_sha256": "675eebc1b1148563a7bf05fd04c7ffa5fc27d5278c8df5f0161c13fb55b32343",
+      "license": "Zlib",
+      "note": "MLTK rock_paper_scissors: Keras .h5, float32 and int8 TFLite"
+    },
+    "MLTK_LICENSE.md": {
+      "url": "https://raw.githubusercontent.com/SiliconLabs/mltk/ee2a1fc32dbafa5a2e5af66c54f6b3b62c445f2a/LICENSE.md",
+      "sha256": "52f7b1084ea81058d25143dcc3ddbfc1d87e86488ffbc77ef1812bd2674c80b3",
+      "pinned_sha256": null,
+      "license": "Zlib",
+      "note": "License of the Silicon Labs MLTK"
+    },
+    "rock_paper_scissors_v2.7z": {
+      "url": "https://github.com/SiliconLabs/mltk_assets/raw/db459655f2c2a8dde34df34962d88dd0b1f6a9bf/datasets/rock_paper_scissors_v2.7z",
+      "sha256": "bf20c4ee4756b4126e6bb414845157cb553ca206f4b9a697bec4c0849c7e8b7b",
+      "pinned_sha256": "bf20c4ee4756b4126e6bb414845157cb553ca206f4b9a697bec4c0849c7e8b7b",
+      "license": "Zlib",
+      "note": "Rock/paper/scissors dataset v2, used only to validate the conversion"
+    }
+  },
+  "outputs": {
+    "scenes/hand_tracker/yolox/model/yolox_n_body_head_hand_Nx3xHxW.onnx": {
+      "sha256": "2cfe872bbf195743a5cac7a36c45c18f10422b01e7ca33cad486c9665283d6a1"
+    },
+    "scenes/hand_tracker/gesture/model/rock_paper_scissors_float32.onnx": {
+      "sha256": "9447cbfc23df07467a62e3f11f280a2aa68d7716e4586718d6961708e7510474"
+    }
+  }
+}

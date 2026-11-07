@@ -1,0 +1,8 @@
+# Configuration of gdformat (gdtoolkit), see dev_scripts/reformat.py.
+excluded_directories: !!set
+  .git: null
+  .godot: null
+  venv: null
+line_length: 100
+safety_checks: null
+use_spaces: 4

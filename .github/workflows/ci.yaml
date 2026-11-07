@@ -1,0 +1,71 @@
+name: Continuous integration
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+env:
+  GODOT_VERSION: 4.6.2
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          lfs: true
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install the development tools
+        run: |
+          python -m venv venv
+          touch venv/.gdignore
+          venv/bin/pip install -r dev/requirements.txt
+
+      - name: Cache Godot
+        id: cache-godot
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}/godot
+          key: godot-${{ env.GODOT_VERSION }}-mono-linux-x86_64
+
+      - name: Download Godot
+        if: steps.cache-godot.outputs.cache-hit != 'true'
+        run: |
+          curl --fail --location --silent --show-error \
+            --output godot.zip \
+            "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_mono_linux_x86_64.zip"
+          unzip -q godot.zip -d "${{ runner.temp }}/godot"
+          rm godot.zip
+
+      - name: Point to Godot
+        run: |
+          echo "GODOT=${{ runner.temp }}/godot/Godot_v${GODOT_VERSION}-stable_mono_linux_x86_64/Godot_v${GODOT_VERSION}-stable_mono_linux.x86_64" >> "$GITHUB_ENV"
+
+      - name: Restore
+        run: dotnet restore SplashNSplat.sln
+
+      # NOTE (mristin):
+      # We check the formatting and lint first, as a fast-fail.
+      - name: Check the formatting and lint
+        run: |
+          venv/bin/python dev/continuous_integration/precommit.py \
+            --select reformat lint
+
+      - name: Run the tests
+        run: |
+          venv/bin/python dev/continuous_integration/precommit.py \
+            --skip reformat lint

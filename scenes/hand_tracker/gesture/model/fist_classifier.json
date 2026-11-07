@@ -1,0 +1,31 @@
+{
+  "model": "fist_classifier.onnx",
+  "source": "Trained on recordings by dev/computer_vision/train_fist_classifier.py",
+  "architecture": "MobileNetV3-Small (alpha 0.75), ImageNet-pretrained, fine-tuned",
+  "input": {
+    "name": "input",
+    "shape": [
+      -1,
+      96,
+      96,
+      3
+    ],
+    "layout": "NHWC",
+    "dtype": "float32",
+    "channel_order": "RGB",
+    "normalization": "none, values in [0, 255]; the model normalizes the contrast of every crop to its center and rescales itself",
+    "crop": "square, 1.5 x the longer side of the hand box, clamped to the frame",
+    "resize": "bilinear (area-averaged when shrinking)"
+  },
+  "output": {
+    "name": "probabilities",
+    "shape": [
+      -1,
+      2
+    ]
+  },
+  "labels": {
+    "0": "nonfist",
+    "1": "fist"
+  }
+}
