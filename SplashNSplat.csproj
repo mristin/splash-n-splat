@@ -1,0 +1,24 @@
+<Project Sdk="Godot.NET.Sdk/4.6.2">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework Condition=" '$(GodotTargetPlatform)' == 'android' ">net9.0</TargetFramework>
+    <EnableDynamicLoading>true</EnableDynamicLoading>
+    <RootNamespace>SplashNSplat</RootNamespace>
+    <Nullable>enable</Nullable>
+    <!--
+      NOTE (mristin):
+      We keep the GC from blocking the render loop for long; the camera frames
+      are large objects.
+    -->
+    <ConcurrentGarbageCollection>true</ConcurrentGarbageCollection>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- The tests live in their own project and must not end up in the game. -->
+    <Compile Remove="tests/**" />
+    <Compile Remove="venv/**" />
+    <Compile Remove=".cache/**" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.24.4" />
+  </ItemGroup>
+</Project>

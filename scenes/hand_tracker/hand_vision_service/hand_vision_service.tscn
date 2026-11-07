@@ -1,0 +1,6 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/hand_tracker/hand_vision_service/HandVisionService.cs" id="1_script"]
+
+[node name="HandVisionService" type="Node"]
+script = ExtResource("1_script")

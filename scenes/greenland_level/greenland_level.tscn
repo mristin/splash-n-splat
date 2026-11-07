@@ -1,0 +1,90 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/greenland_level/greenland_level.gd" id="1_level"]
+[ext_resource type="Script" path="res://scenes/greenland_level/greenland_backdrop.gd" id="2_backdrop"]
+[ext_resource type="Script" path="res://scenes/winter_level/cover_spot.gd" id="3_spot"]
+[ext_resource type="Script" path="res://scenes/winter_level/foreground_drifts.gd" id="4_drifts"]
+
+[sub_resource type="Gradient" id="Gradient_flake"]
+offsets = PackedFloat32Array(0, 0.6, 1)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0.6, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_flake"]
+gradient = SubResource("Gradient_flake")
+width = 16
+height = 16
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.5)
+
+[node name="GreenlandLevel" type="Node2D"]
+script = ExtResource("1_level")
+
+[node name="Backdrop" type="Node2D" parent="."]
+z_index = -100
+script = ExtResource("2_backdrop")
+
+[node name="Spots" type="Node2D" parent="."]
+
+[node name="FarFloe" type="Node2D" parent="Spots"]
+position = Vector2(330, 690)
+scale = Vector2(1.05, 1.05)
+script = ExtResource("3_spot")
+kind = 4
+side = 1
+
+[node name="FarIceberg" type="Node2D" parent="Spots"]
+position = Vector2(960, 685)
+scale = Vector2(1.05, 1.05)
+script = ExtResource("3_spot")
+kind = 5
+side = 1
+
+[node name="FarRock" type="Node2D" parent="Spots"]
+position = Vector2(1590, 695)
+scale = Vector2(1.05, 1.05)
+script = ExtResource("3_spot")
+kind = 6
+side = -1
+
+[node name="NearRock" type="Node2D" parent="Spots"]
+position = Vector2(320, 1000)
+scale = Vector2(1.5, 1.5)
+script = ExtResource("3_spot")
+kind = 6
+side = 1
+
+[node name="NearFloe" type="Node2D" parent="Spots"]
+position = Vector2(960, 1010)
+scale = Vector2(1.5, 1.5)
+script = ExtResource("3_spot")
+kind = 4
+side = 1
+
+[node name="NearIceberg" type="Node2D" parent="Spots"]
+position = Vector2(1600, 1005)
+scale = Vector2(1.45, 1.45)
+script = ExtResource("3_spot")
+kind = 5
+side = 1
+
+[node name="ForegroundDrifts" type="Node2D" parent="."]
+script = ExtResource("4_drifts")
+
+[node name="Snowfall" type="CPUParticles2D" parent="."]
+z_index = 420
+position = Vector2(960, -30)
+amount = 70
+lifetime = 9.0
+preprocess = 9.0
+texture = SubResource("GradientTexture2D_flake")
+emission_shape = 3
+emission_rect_extents = Vector2(1100, 10)
+direction = Vector2(0.15, 1)
+spread = 20.0
+gravity = Vector2(0, 10)
+initial_velocity_min = 50.0
+initial_velocity_max = 90.0
+scale_amount_min = 0.3
+scale_amount_max = 1.0
+color = Color(1, 1, 1, 0.8)

@@ -1,0 +1,49 @@
+{
+  "model": "rock_paper_scissors_float32.onnx",
+  "variant": "float32",
+  "source": "Silicon Labs MLTK rock_paper_scissors (version 1)",
+  "license": "Zlib",
+  "input": {
+    "name": "input",
+    "shape": [
+      -1,
+      84,
+      84,
+      1
+    ],
+    "layout": "NHWC",
+    "dtype": "float32",
+    "channels": "grayscale (1 channel)",
+    "grayscale_conversion": "PIL 'L' (ITU-R 601-2 luma): L = R*299/1000 + G*587/1000 + B*114/1000",
+    "resize": "bilinear to 84x84 (the training images were 96x96)",
+    "normalization": "per sample: x = (x - mean(x)) / (std(x) + 1e-6), x in [0, 255] before",
+    "quantization": "none, float32 throughout"
+  },
+  "output": {
+    "name": "dense_1",
+    "shape": [
+      -1,
+      4
+    ],
+    "dtype": "float32",
+    "meaning": "class probabilities (softmax is part of the model)"
+  },
+  "labels": {
+    "0": "rock",
+    "1": "paper",
+    "2": "scissor",
+    "3": "_unknown_"
+  },
+  "game_mapping": {
+    "rock": "FIST",
+    "paper": "OPEN",
+    "scissor": "OTHER",
+    "_unknown_": "OTHER"
+  },
+  "training_augmentation": {
+    "rotation_range_degrees": 15,
+    "horizontal_flip": true,
+    "vertical_flip": true,
+    "note": "The training photos show hands from above; see README for the domain gap."
+  }
+}

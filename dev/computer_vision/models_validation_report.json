@@ -1,0 +1,315 @@
+{
+  "gesture": {
+    "float32": {
+      "file": "rock_paper_scissors_float32.onnx",
+      "sha256": "9447cbfc23df07467a62e3f11f280a2aa68d7716e4586718d6961708e7510474",
+      "size_bytes": 294790,
+      "opset": [
+        {
+          "domain": "",
+          "version": 13
+        },
+        {
+          "domain": "ai.onnx.ml",
+          "version": 2
+        }
+      ],
+      "operators": [
+        "Add",
+        "Conv",
+        "MatMul",
+        "MaxPool",
+        "Relu",
+        "Reshape",
+        "Softmax",
+        "Transpose"
+      ],
+      "inputs": [
+        {
+          "name": "input",
+          "shape": [
+            "unk__33",
+            84,
+            84,
+            1
+          ],
+          "type": "tensor(float)"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "dense_1",
+          "shape": [
+            "unk__34",
+            4
+          ],
+          "type": "tensor(float)"
+        }
+      ]
+    },
+    "int8": {
+      "file": "rock_paper_scissors_int8.onnx",
+      "sha256": "89d17a9862dd841adf156361499856693f2e280faf4a994e088436fd420e4027",
+      "size_bytes": 85570,
+      "opset": [
+        {
+          "domain": "",
+          "version": 13
+        },
+        {
+          "domain": "ai.onnx.ml",
+          "version": 2
+        }
+      ],
+      "operators": [
+        "Add",
+        "Conv",
+        "DequantizeLinear",
+        "MatMul",
+        "MaxPool",
+        "QuantizeLinear",
+        "Relu",
+        "Reshape",
+        "Softmax",
+        "Transpose"
+      ],
+      "inputs": [
+        {
+          "name": "serving_default_conv2d_input:0",
+          "shape": [
+            "unk__172",
+            84,
+            84,
+            1
+          ],
+          "type": "tensor(float)"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "StatefulPartitionedCall:0",
+          "shape": [
+            "unk__173",
+            4
+          ],
+          "type": "tensor(float)"
+        }
+      ]
+    },
+    "validation": {
+      "real_samples": 400,
+      "synthetic_samples": 16,
+      "comparisons": [
+        {
+          "a": "keras",
+          "b": "onnx_float32",
+          "max_abs_error": 4.76837158203125e-07,
+          "mean_abs_error": 2.1593368870753693e-08,
+          "class_agreement": 1.0,
+          "subset": "real"
+        },
+        {
+          "a": "keras",
+          "b": "onnx_float32",
+          "max_abs_error": 1.1920928955078125e-07,
+          "mean_abs_error": 1.4372430356957011e-08,
+          "class_agreement": 1.0,
+          "subset": "synthetic"
+        },
+        {
+          "a": "tflite_float32",
+          "b": "onnx_float32",
+          "max_abs_error": 5.066394805908203e-07,
+          "mean_abs_error": 1.6525312673820736e-08,
+          "class_agreement": 1.0,
+          "subset": "real"
+        },
+        {
+          "a": "tflite_float32",
+          "b": "onnx_float32",
+          "max_abs_error": 7.748603820800781e-07,
+          "mean_abs_error": 2.9091053121987898e-08,
+          "class_agreement": 1.0,
+          "subset": "synthetic"
+        },
+        {
+          "a": "tflite_int8",
+          "b": "onnx_int8",
+          "max_abs_error": 0.0,
+          "mean_abs_error": 0.0,
+          "class_agreement": 1.0,
+          "subset": "real"
+        },
+        {
+          "a": "tflite_int8",
+          "b": "onnx_int8",
+          "max_abs_error": 0.0,
+          "mean_abs_error": 0.0,
+          "class_agreement": 1.0,
+          "subset": "synthetic"
+        },
+        {
+          "a": "onnx_float32",
+          "b": "onnx_int8",
+          "max_abs_error": 0.11898943781852722,
+          "mean_abs_error": 0.0022357944399118423,
+          "class_agreement": 1.0,
+          "subset": "real"
+        },
+        {
+          "a": "onnx_float32",
+          "b": "onnx_int8",
+          "max_abs_error": 0.046912312507629395,
+          "mean_abs_error": 0.0024045933969318867,
+          "class_agreement": 1.0,
+          "subset": "synthetic"
+        }
+      ],
+      "accuracy_on_real_samples": {
+        "keras": 0.9675,
+        "tflite_float32": 0.9675,
+        "tflite_int8": 0.9675,
+        "onnx_float32": 0.9675,
+        "onnx_int8": 0.9675
+      },
+      "onnx_latency_1_thread": {
+        "onnx_float32": {
+          "median_ms": 0.20732400025735842,
+          "p95_ms": 0.2762480016826885
+        },
+        "onnx_int8": {
+          "median_ms": 0.7208995002656593,
+          "p95_ms": 1.0950370015052613
+        }
+      }
+    }
+  },
+  "yolox": {
+    "dynamic": {
+      "file": "yolox_n_body_head_hand_Nx3xHxW.onnx",
+      "sha256": "2cfe872bbf195743a5cac7a36c45c18f10422b01e7ca33cad486c9665283d6a1",
+      "size_bytes": 3653878,
+      "opset": [
+        {
+          "domain": "",
+          "version": 11
+        }
+      ],
+      "operators": [
+        "Add",
+        "Concat",
+        "Constant",
+        "Conv",
+        "MaxPool",
+        "Mul",
+        "Reshape",
+        "Resize",
+        "Shape",
+        "Sigmoid",
+        "Slice",
+        "Transpose"
+      ],
+      "inputs": [
+        {
+          "name": "input",
+          "shape": [
+            "N",
+            3,
+            "H",
+            "W"
+          ],
+          "type": "tensor(float)"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "output",
+          "shape": [
+            "N",
+            "Transposeoutput_dim_1",
+            "Transposeoutput_dim_2"
+          ],
+          "type": "tensor(float)"
+        }
+      ]
+    },
+    "fixed": {
+      "file": "yolox_n_body_head_hand_0461_0.4428_1x3x256x320.onnx",
+      "sha256": "34cb5d9a8fc71be1f1bd323013fe39c62b4fa2284bcf38f2f6195b14c3640b52",
+      "size_bytes": 3676016,
+      "opset": [
+        {
+          "domain": "",
+          "version": 11
+        }
+      ],
+      "operators": [
+        "Add",
+        "Concat",
+        "Conv",
+        "MaxPool",
+        "Mul",
+        "Reshape",
+        "Resize",
+        "Sigmoid",
+        "Slice",
+        "Transpose"
+      ],
+      "inputs": [
+        {
+          "name": "input",
+          "shape": [
+            1,
+            3,
+            256,
+            320
+          ],
+          "type": "tensor(float)"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "output",
+          "shape": [
+            1,
+            1680,
+            8
+          ],
+          "type": "tensor(float)"
+        }
+      ]
+    },
+    "dummy_inference": {
+      "input_shape": [
+        1,
+        3,
+        256,
+        320
+      ],
+      "output_shape": [
+        1,
+        1680,
+        8
+      ],
+      "max_abs_difference_dynamic_vs_fixed": 0.0,
+      "latency_2_threads": {
+        "160x128": {
+          "median_ms": 4.105092500140017,
+          "p95_ms": 5.045428000812535
+        },
+        "256x192": {
+          "median_ms": 8.007499498489778,
+          "p95_ms": 9.139767998931347
+        },
+        "320x256": {
+          "median_ms": 10.693063499275013,
+          "p95_ms": 13.16153300103906
+        },
+        "320x320": {
+          "median_ms": 13.214579000305093,
+          "p95_ms": 17.80424699973082
+        }
+      }
+    }
+  }
+}
