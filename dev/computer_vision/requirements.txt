@@ -1,0 +1,14 @@
+# The tools to download, convert and validate the models;
+# see dev/computer_vision/download_and_convert_models.py and README.md.
+#
+# NOTE: tf2onnx 1.16.1 supports TensorFlow up to 2.15 and requires protobuf 3.20,
+# so we pin the whole stack to versions known to work together on Python 3.10+.
+tensorflow-cpu==2.15.1
+tf2onnx==1.16.1
+onnx==1.16.2
+onnxruntime==1.19.2
+numpy==1.26.4
+protobuf==3.20.3
+pillow==10.4.0
+py7zr==0.22.0
+pydantic==2.9.2

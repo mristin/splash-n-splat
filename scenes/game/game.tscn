@@ -1,0 +1,47 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/game/game.gd" id="1_game"]
+[ext_resource type="PackedScene" path="res://scenes/winter_level/winter_level.tscn" id="2_level"]
+[ext_resource type="PackedScene" path="res://scenes/hand_tracker/hand_vision_service/hand_vision_service.tscn" id="3_vision"]
+[ext_resource type="PackedScene" path="res://scenes/snow_overlay/snow_accumulation_overlay.tscn" id="4_snow"]
+[ext_resource type="Script" path="res://scenes/aim/aim_controller.gd" id="5_aim"]
+[ext_resource type="PackedScene" path="res://scenes/hud/hud.tscn" id="6_hud"]
+[ext_resource type="PackedScene" path="res://scenes/debug_overlay/debug_overlay.tscn" id="7_debug"]
+[ext_resource type="Script" path="res://scenes/sound/sound_bank.gd" id="8_sound"]
+[ext_resource type="PackedScene" path="res://scenes/camera_overlay/camera_overlay.tscn" id="9_camera"]
+[ext_resource type="PackedScene" path="res://scenes/travel_map/travel_map.tscn" id="10_travel"]
+[ext_resource type="Script" path="res://scenes/aim/head_outlines.gd" id="11_heads"]
+
+[node name="Game" type="Node2D"]
+script = ExtResource("1_game")
+
+[node name="HandVisionService" parent="." instance=ExtResource("3_vision")]
+
+[node name="Camera" type="Camera2D" parent="."]
+anchor_mode = 0
+
+[node name="Level" parent="." instance=ExtResource("2_level")]
+
+[node name="Projectiles" type="Node2D" parent="."]
+
+[node name="SnowOverlay" parent="." instance=ExtResource("4_snow")]
+
+[node name="CameraOverlay" parent="." instance=ExtResource("9_camera")]
+
+[node name="AimLayer" type="CanvasLayer" parent="."]
+layer = 6
+
+[node name="HeadOutlines" type="Node2D" parent="AimLayer"]
+script = ExtResource("11_heads")
+
+[node name="Aim" type="Node2D" parent="AimLayer"]
+script = ExtResource("5_aim")
+
+[node name="Hud" parent="." instance=ExtResource("6_hud")]
+
+[node name="TravelMap" parent="." instance=ExtResource("10_travel")]
+
+[node name="DebugOverlay" parent="." instance=ExtResource("7_debug")]
+
+[node name="Sound" type="Node" parent="."]
+script = ExtResource("8_sound")

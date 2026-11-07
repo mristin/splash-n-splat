@@ -1,0 +1,9 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/travel_map/travel_map.gd" id="1_script"]
+
+[node name="TravelMap" type="CanvasLayer"]
+layer = 8
+script = ExtResource("1_script")
+
+[node name="Map" type="Node2D" parent="."]

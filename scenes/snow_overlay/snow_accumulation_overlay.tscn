@@ -1,0 +1,19 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/snow_overlay/snow_accumulation_overlay.gd" id="1_script"]
+[ext_resource type="Shader" path="res://scenes/snow_overlay/frost.gdshader" id="2_frost"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_frost"]
+shader = ExtResource("2_frost")
+
+[node name="SnowOverlay" type="CanvasLayer"]
+layer = 4
+script = ExtResource("1_script")
+
+[node name="Frost" type="ColorRect" parent="."]
+material = SubResource("ShaderMaterial_frost")
+offset_right = 1920.0
+offset_bottom = 1080.0
+mouse_filter = 2
+
+[node name="Lumps" type="Node2D" parent="."]

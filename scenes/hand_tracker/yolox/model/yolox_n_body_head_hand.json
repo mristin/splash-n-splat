@@ -1,0 +1,36 @@
+{
+  "model": "yolox_n_body_head_hand_Nx3xHxW.onnx",
+  "source": "PINTO model zoo 426_YOLOX-Body-Head-Hand, nano, epoch 461, mAP 0.4428",
+  "license": "Apache-2.0",
+  "input": {
+    "name": "input",
+    "shape": [
+      "N",
+      3,
+      "H",
+      "W"
+    ],
+    "layout": "NCHW",
+    "dtype": "float32",
+    "channel_order": "BGR",
+    "normalization": "none, values in [0, 255]",
+    "resize": "letterbox: keep the aspect ratio, pad bottom/right with 114",
+    "constraint": "H and W must be multiples of 32"
+  },
+  "output": {
+    "name": "output",
+    "shape": [
+      "N",
+      "sum over strides 8, 16, 32 of (H/s)*(W/s)",
+      8
+    ],
+    "row": "cx, cy, w, h (raw, grid-relative), objectness, p(body), p(head), p(hand)",
+    "decode": "cx = (raw + grid_x) * stride; w = exp(raw_w) * stride; score = objectness * p(class); sigmoid already applied",
+    "nms": "not included; apply it per class"
+  },
+  "labels": {
+    "0": "body",
+    "1": "head",
+    "2": "hand"
+  }
+}
