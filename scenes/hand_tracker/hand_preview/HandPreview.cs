@@ -37,7 +37,7 @@ public partial class HandPreview : Control
         var rect = new Rect2(Vector2.Zero, Size);
         DrawRect(rect, new Color(0.05f, 0.08f, 0.12f, 0.6f));
 
-        var texture = Service?.CameraTexture;
+        var texture = Service?.GetCameraTexture();
         if (texture != null)
         {
             if (Mirror)

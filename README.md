@@ -1,5 +1,7 @@
 # Splash 'n' Splat
 
+![Splash 'n' Splat: flying to the North Pole, then throwing snowballs at the polar bears and ducking theirs](docs/splash-n-splat.gif)
+
 **Splash 'n' Splat is a snowball shooting gallery for children which they play with their hands in front of a webcam.**
 
 Cheerful animals (polar bears, walruses, reindeer, foxes and many more) pop up from behind snowdrifts, igloos, rocks and trees.
@@ -45,6 +47,26 @@ You see yourselves dimly over the snowy world, like in a mirror, so you always k
 The game runs entirely on your computer and works offline.
 The webcam images are processed locally, in memory, and are never saved or sent anywhere.
 
+## Supported systems
+
+You need a webcam which supports 640x480.
+
+| System | Supported |
+|---|---|
+| **Linux** (x86_64) | ✅ |
+| **macOS 11 or later** (Apple Silicon and Intel) | ✅ (macOS asks for the permission to use the camera on the first start) |
+| **macOS 10.15** | ❌ (the hand tracking needs macOS 11) |
+| **Windows** (x86_64) | 🧪 experimental, see below |
+
+Godot 4.6, the engine of the game, has no camera on Windows, so the Windows package brings [CameraServerExtension] along.
+Virtual cameras (e.g., the one of OBS Studio) do not work there.
+
+The macOS app is not notarized: open it the first time with a right click and Open.
+
+The packages for Windows and macOS are built, but not yet tested on those systems; please report any problems.
+
+[CameraServerExtension]: https://github.com/j20001970/godot-cameraserver-extension
+
 ## How to start the game
 
 *Coming soon.*
@@ -56,6 +78,7 @@ The third-party components, e.g., Godot Engine, ONNX Runtime and the models, kee
 
 ## Changelog
 
-### 1.0.0 (2026-11-07)
+### 1.0.0 (2026-11-18)
 
 The first version which was playable and fun back-to-back.
+It runs on Linux, macOS 11 or later (Apple Silicon and Intel) and, experimentally, on Windows.

@@ -19,6 +19,12 @@
     <Compile Remove=".cache/**" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.24.4" />
+    <!--
+      NOTE (mristin):
+      We stay with ONNX Runtime 1.19, the last version whose libraries for
+      macOS run on macOS 11 (from 1.20 on, they need macOS 13.3, and from 1.24
+      on, there is none for the Intel Macs); keep the tests at the same version.
+    -->
+    <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.19.2" />
   </ItemGroup>
 </Project>
