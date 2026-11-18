@@ -153,6 +153,33 @@ public partial class HandVisionService : Node
     public string CameraDescription { get; private set; } = "";
 
     private CameraFeed? _feed;
+
+    /// <summary>The camera extension on Windows (see <see cref="StartCameraExtension"/>), or null.</summary>
+    private GodotObject? _cameraExtension;
+
+    /// <summary>
+    /// Why there may be no camera: "unsupported" (on Windows without the camera
+    /// extension), "denied" (Windows does not allow the camera), or "" otherwise.
+    /// </summary>
+    private string _noCameraReason = "";
+
+    /// <summary>
+    /// The chroma plane of a feed which delivers its frames as two planes (Y and
+    /// CbCr, e.g., on macOS); <see cref="CameraTexture"/> then holds the Y plane.
+    /// </summary>
+    private CameraTexture? _cbcrTexture;
+
+    /// <summary>The frames of a two-plane feed converted to RGB, for the preview.</summary>
+    private ImageTexture? _ycbcrPreview;
+
+    /// <summary>Try to activate the feed again at this time, see <see cref="RetryActivation"/>.</summary>
+    private double _nextActivationAttempt = double.NaN;
+
+    /// <summary>Try to activate an inactive feed again every this many seconds.</summary>
+    private const double _activationRetryPeriod = 3.0;
+
+    /// <summary>Convert the two-plane frames down to at most this width.</summary>
+    private const int _maxYcbcrWidth = 640;
     private double _searchStarted = double.NaN;
     private double _firstFeedAt = double.NaN;
 
@@ -199,7 +226,82 @@ public partial class HandVisionService : Node
 
         SetStatus(ServiceStatus.SearchingCamera, "Looking for a camera...");
         CameraServer.MonitoringFeeds = true;
+        if (OS.GetName() == "Windows")
+        {
+            StartCameraExtension();
+        }
+
         _searchStarted = Now;
+    }
+
+    /// <summary>
+    /// Load CameraServerExtension, which provides the camera feeds on Windows,
+    /// where Godot 4.6 implements no camera (see
+    /// addons/CameraServerExtension/CameraServerExtension.gdextension).
+    /// </summary>
+    /// <remarks>
+    /// The extension must be created after <see cref="CameraServer.MonitoringFeeds"/>
+    /// is set, and must live as long as its feeds are in use.
+    /// </remarks>
+    private void StartCameraExtension()
+    {
+        // NOTE (mristin):
+        // The packaging puts the extension next to the executable; in the
+        // editor, it stays in the project.
+        string directory = OS.HasFeature("editor")
+            ? ProjectSettings.GlobalizePath("res://addons/CameraServerExtension")
+            : OS.GetExecutablePath().GetBaseDir();
+        string path = directory.PathJoin("CameraServerExtension.gdextension");
+        if (!System.IO.File.Exists(path))
+        {
+            GD.PushWarning($"The camera extension {path} is missing; there is no camera on Windows without it.");
+            _noCameraReason = "unsupported";
+            return;
+        }
+
+        var status = GDExtensionManager.LoadExtension(path);
+        if (status != GDExtensionManager.LoadStatus.Ok && status != GDExtensionManager.LoadStatus.AlreadyLoaded)
+        {
+            GD.PushWarning($"The camera extension {path} did not load: {status}.");
+            _noCameraReason = "unsupported";
+            return;
+        }
+
+        if (!ClassDB.ClassExists("CameraServerExtension"))
+        {
+            GD.PushWarning($"The camera extension {path} loaded, but provides no CameraServerExtension.");
+            _noCameraReason = "unsupported";
+            return;
+        }
+
+        _cameraExtension = ClassDB.Instantiate("CameraServerExtension").AsGodotObject();
+        GD.Print($"Loaded the camera extension {path}.");
+        if (_cameraExtension != null && !_cameraExtension.Call("permission_granted").AsBool())
+        {
+            _noCameraReason = "denied";
+        }
+    }
+
+    /// <summary>
+    /// Whether a feed comes from CameraServerExtension, whose formats must be
+    /// called by name: the methods of <see cref="CameraFeed"/> do not reach them.
+    /// </summary>
+    private static bool IsExtensionFeed(CameraFeed feed) => feed.GetClass() == "CameraFeedExtension";
+
+    private static Godot.Collections.Array GetFormats(CameraFeed feed) =>
+        IsExtensionFeed(feed) ? feed.Call("get_formats").AsGodotArray() : feed.GetFormats();
+
+    private static void SetFormat(CameraFeed feed, int index)
+    {
+        var parameters = new Godot.Collections.Dictionary();
+        if (IsExtensionFeed(feed))
+        {
+            feed.Call("set_format", index, parameters);
+        }
+        else
+        {
+            feed.SetFormat(index, parameters);
+        }
     }
 
 
@@ -212,6 +314,8 @@ public partial class HandVisionService : Node
         {
             SearchCamera();
         }
+
+        RetryActivation();
 
         UpdateAim();
         UpdateHeads(delta);
@@ -400,7 +504,7 @@ public partial class HandVisionService : Node
     public Godot.Collections.Array<Rect2> GetHeads() => _headRects;
 
     /// <summary>The camera image, or null without a camera.</summary>
-    public Texture2D? GetCameraTexture() => CameraTexture;
+    public Texture2D? GetCameraTexture() => _ycbcrPreview ?? (Texture2D?)CameraTexture;
 
     /// <summary>
     /// The region of the (not mirrored) camera image which maps to the whole
@@ -416,6 +520,9 @@ public partial class HandVisionService : Node
 
     /// <summary>Whether the camera, the models and the pipeline work.</summary>
     public bool IsRunning() => Status == ServiceStatus.Running;
+
+    /// <summary>Why there may be no camera, see <see cref="_noCameraReason"/>.</summary>
+    public string GetNoCameraReason() => _noCameraReason;
 
     /// <summary>Whether the game can not be played (no camera, no models, a failure).</summary>
     public bool IsUnusable() => Status is ServiceStatus.NoCamera or ServiceStatus.ModelsMissing
@@ -486,12 +593,23 @@ public partial class HandVisionService : Node
 
         if (candidates.Count == 0)
         {
+            // NOTE (mristin):
+            // Godot 4.6 implements no camera on Windows: without the camera
+            // extension, the camera server there never reports a feed, whatever
+            // is plugged in.
             SetStatus(
                 ServiceStatus.NoCamera,
-                count == 0
-                    ? "No camera found. This game is played with your hands in front of a webcam; " +
-                        "please connect one and start the game again."
-                    : "No camera supports 640x480, which the hand tracking needs."
+                _noCameraReason switch
+                {
+                    "unsupported" => "The camera does not work on Windows without the camera extension; " +
+                        "please download the game again.",
+                    "denied" => "Windows does not allow the camera; please allow it " +
+                        "(Settings, Privacy, Camera) and start the game again.",
+                    _ => count == 0
+                        ? "No camera found. This game is played with your hands in front of a webcam; " +
+                            "please connect one and start the game again."
+                        : "No camera supports 640x480, which the hand tracking needs.",
+                }
             );
             return;
         }
@@ -500,10 +618,22 @@ public partial class HandVisionService : Node
         StartCamera(chosen, formatIndex);
     }
 
-    /// <summary>Find the 640x480 format, preferring YUYV; return -1 if there is none.</summary>
+    /// <summary>
+    /// Find the 640x480 format, preferring YUYV; return -1 if there is none, and
+    /// <see cref="_anyFormat"/> if the feed lists no formats at all.
+    /// </summary>
+    /// <remarks>
+    /// Godot lists the formats only on Linux; elsewhere (e.g., on macOS) the feed
+    /// runs at the resolution of the system, which the pipeline letterboxes anyhow.
+    /// </remarks>
     private static int FindFormat(CameraFeed feed)
     {
-        var formats = feed.GetFormats();
+        var formats = GetFormats(feed);
+        if (formats.Count == 0)
+        {
+            return _anyFormat;
+        }
+
         int fallback = -1;
         for (int i = 0; i < formats.Count; i++)
         {
@@ -516,7 +646,9 @@ public partial class HandVisionService : Node
                 continue;
             }
 
-            if (pixelFormat.StartsWith("YUYV"))
+            // NOTE (mristin):
+            // V4L2 on Linux calls the format YUYV, Media Foundation on Windows YUY2.
+            if (pixelFormat.StartsWith("YUYV") || pixelFormat.StartsWith("YUY2"))
             {
                 return i;
             }
@@ -527,15 +659,31 @@ public partial class HandVisionService : Node
         return fallback;
     }
 
+    /// <summary>The format index of a feed which lists no formats (see <see cref="FindFormat"/>).</summary>
+    private const int _anyFormat = int.MaxValue;
+
     private void StartCamera(CameraFeed feed, int formatIndex)
     {
-        CameraDescription = $"{feed.GetName()}, format #{formatIndex}: {feed.GetFormats()[formatIndex]}";
-        GD.Print($"Starting the camera {CameraDescription}; all formats: {feed.GetFormats()}");
+        CameraDescription = formatIndex == _anyFormat
+            ? $"{feed.GetName()}, the default format"
+            : $"{feed.GetName()}, format #{formatIndex}: {GetFormats(feed)[formatIndex]}";
+        GD.Print($"Starting the camera {CameraDescription}; all formats: {GetFormats(feed)}");
         _feed = feed;
-        _feed.SetFormat(formatIndex, new Godot.Collections.Dictionary());
+        if (formatIndex != _anyFormat)
+        {
+            SetFormat(_feed, formatIndex);
+        }
+
         _feed.FeedIsActive = true;
+        _nextActivationAttempt = Now + _activationRetryPeriod;
 
         CameraTexture = new CameraTexture { CameraFeedId = _feed.GetId(), CameraIsActive = true };
+        _cbcrTexture = new CameraTexture
+        {
+            CameraFeedId = _feed.GetId(),
+            WhichFeed = CameraServer.FeedImage.CbcrImage,
+            CameraIsActive = true,
+        };
         _feed.FrameChanged += OnFrameChanged;
 
         SetStatus(ServiceStatus.LoadingModels, "Loading the hand models...");
@@ -562,32 +710,107 @@ public partial class HandVisionService : Node
         _thread.Start();
     }
 
+    /// <summary>
+    /// Activate the feed again if it did not start, which happens on macOS on the
+    /// first start: the feed asks for the permission and stays off even when the
+    /// players grant it.
+    /// </summary>
+    /// <remarks>
+    /// While the system still asks, every attempt asks again, so we try only every
+    /// few seconds; Godot keeps the capture session once there is one.
+    /// </remarks>
+    private void RetryActivation()
+    {
+        if (_feed == null || _feed.FeedIsActive || double.IsNaN(_nextActivationAttempt)
+            || Now < _nextActivationAttempt)
+        {
+            return;
+        }
+
+        _nextActivationAttempt = Now + _activationRetryPeriod;
+        GD.Print("The camera did not start; trying again (maybe the camera permission was just granted).");
+        _feed.FeedIsActive = true;
+        if (CameraTexture != null)
+        {
+            CameraTexture.CameraIsActive = true;
+        }
+
+        if (_cbcrTexture != null)
+        {
+            _cbcrTexture.CameraIsActive = true;
+        }
+    }
+
     private void OnFrameChanged()
     {
         double now = Now;
         _cameraRate.Tick(now);
 
-        if (!_frameRequested || CameraTexture == null)
+        if (CameraTexture == null || _feed == null)
+        {
+            return;
+        }
+
+        bool twoPlanes = _feed.GetDatatype() == CameraFeed.FeedDataType.YcbcrSep;
+        if (!_frameRequested && !twoPlanes)
         {
             return;
         }
 
         var stopwatch = Stopwatch.StartNew();
-        Image? image = CameraTexture.GetImage();
-        if (image == null || image.IsEmpty())
+        byte[] rgb;
+        int width;
+        int height;
+        if (twoPlanes)
         {
-            return;
-        }
+            // NOTE (mristin):
+            // A two-plane feed has no RGB texture, so we convert it ourselves, on
+            // every frame, as the preview needs it, too.
+            Image? luma = CameraTexture.GetImage();
+            Image? chroma = _cbcrTexture?.GetImage();
+            if (luma == null || luma.IsEmpty() || chroma == null || chroma.IsEmpty())
+            {
+                return;
+            }
 
-        if (image.GetFormat() != Image.Format.Rgb8)
+            (rgb, width, height) = YcbcrToRgb(luma, chroma, _maxYcbcrWidth);
+            var preview = Image.CreateFromData(width, height, false, Image.Format.Rgb8, rgb);
+            if (_ycbcrPreview == null || _ycbcrPreview.GetSize() != preview.GetSize())
+            {
+                _ycbcrPreview = ImageTexture.CreateFromImage(preview);
+            }
+            else
+            {
+                _ycbcrPreview.Update(preview);
+            }
+
+            if (!_frameRequested)
+            {
+                return;
+            }
+        }
+        else
         {
-            image.Convert(Image.Format.Rgb8);
+            Image? image = CameraTexture.GetImage();
+            if (image == null || image.IsEmpty())
+            {
+                return;
+            }
+
+            if (image.GetFormat() != Image.Format.Rgb8)
+            {
+                image.Convert(Image.Format.Rgb8);
+            }
+
+            rgb = image.GetData();
+            width = image.GetWidth();
+            height = image.GetHeight();
         }
 
         // NOTE (mristin):
         // We copy the raw bytes on the main thread so that the inference thread
         // never touches any engine objects.
-        var frame = new Frame(image.GetData(), image.GetWidth(), image.GetHeight(), now);
+        var frame = new Frame(rgb, width, height, now);
         _grabStats.Add(stopwatch.Elapsed.TotalMilliseconds);
 
         lock (_frameLock)
@@ -597,6 +820,25 @@ public partial class HandVisionService : Node
 
         _frameRequested = false;
         _frameReady.Set();
+    }
+
+    /// <summary>Convert a Y plane and a CbCr plane of the camera to RGB8.</summary>
+    private static (byte[] Rgb, int Width, int Height) YcbcrToRgb(Image luma, Image chroma, int maxWidth)
+    {
+        if (luma.GetFormat() != Image.Format.R8)
+        {
+            luma.Convert(Image.Format.R8);
+        }
+
+        if (chroma.GetFormat() != Image.Format.Rg8)
+        {
+            chroma.Convert(Image.Format.Rg8);
+        }
+
+        return YcbcrConverter.ToRgb(
+            luma.GetData(), luma.GetWidth(), luma.GetHeight(),
+            chroma.GetData(), chroma.GetWidth(), chroma.GetHeight(),
+            maxWidth);
     }
 
     private string? _recordPath;
@@ -741,5 +983,14 @@ public partial class HandVisionService : Node
         {
             CameraTexture.CameraIsActive = false;
         }
+
+        if (_cbcrTexture != null)
+        {
+            _cbcrTexture.CameraIsActive = false;
+        }
+
+        // NOTE (mristin):
+        // The extension removes its feeds when it is freed, so it goes last.
+        _cameraExtension = null;
     }
 }

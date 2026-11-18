@@ -89,11 +89,26 @@ jobs:
           mkdir -p build/linux build/windows build/macos
 
           # NOTE (mristin):
+          # Hide the packages from Godot, which would otherwise try to load
+          # the camera extension of the Windows package on the other platforms.
+          touch build/.gdignore
+
+          # NOTE (mristin):
           # Godot builds the C# part for each platform itself (dotnet publish),
           # including the native libraries of ONNX Runtime.
           "$GODOT" --headless --path . --export-release "Linux" build/linux/splash-n-splat.x86_64
           "$GODOT" --headless --path . --export-release "Windows" build/windows/splash-n-splat.exe
           "$GODOT" --headless --path . --export-release "macOS" build/macos/splash-n-splat.zip
+
+          # NOTE (mristin):
+          # Godot 4.6 has no camera on Windows. The game loads
+          # CameraServerExtension itself from the directory of the executable
+          # (see HandVisionService.StartCameraExtension).
+          cp addons/CameraServerExtension/CameraServerExtension.gdextension \
+            addons/CameraServerExtension/libcameraserver-extension.windows.dll \
+            build/windows/
+          mkdir -p build/windows/licenses/camera-server-extension
+          cp addons/CameraServerExtension/LICENSE build/windows/licenses/camera-server-extension/
 
           ls -R build | head -100
 
@@ -120,11 +135,11 @@ jobs:
           (cd build/windows && zip -q -r "../../dist/splash-n-splat-${PACKAGE_VERSION}-windows-x86_64.zip" .)
 
           # NOTE (mristin):
-          # Godot packs the macOS app as a zip already. Godot builds a universal
-          # app, but ONNX Runtime ships its native library only for Apple Silicon,
-          # so the hand tracking does not work on Intel Macs.
-          cp build/macos/splash-n-splat.zip "dist/splash-n-splat-${PACKAGE_VERSION}-macos-apple-silicon.zip"
-          (cd notices && zip -q -r "../dist/splash-n-splat-${PACKAGE_VERSION}-macos-apple-silicon.zip" .)
+          # Godot packs the macOS app as a zip already. The app is universal;
+          # ONNX Runtime 1.19 ships its native library for both the Intel and
+          # the Apple Silicon Macs (see SplashNSplat.csproj).
+          cp build/macos/splash-n-splat.zip "dist/splash-n-splat-${PACKAGE_VERSION}-macos-universal.zip"
+          (cd notices && zip -q -r "../dist/splash-n-splat-${PACKAGE_VERSION}-macos-universal.zip" .)
 
           ls -l dist
 

@@ -378,6 +378,19 @@ Select or skip steps with `--select` and `--skip`, e.g., `--select dotnet-test`.
 ## Continuous integration and publishing
 
 GitHub Actions runs the pre-commit checks on every pull request and push to `main` (`.github/workflows/ci.yaml`), and packages the game for Linux, Windows and macOS on a release (`.github/workflows/publish.yaml`), including the license texts.
+
+Mind the limits of the platforms:
+
+* **Windows:** Godot 4.6 implements no camera on Windows, so we use [CameraServerExtension] there, and only there, from `addons/CameraServerExtension/` (the prebuilt Windows x86_64 library of its release 2026.03.27).
+  Godot reports an error on every platform which an extension lists no library for, so the directory is hidden from Godot (`.gdignore`); `HandVisionService` loads the extension itself on Windows (`StartCameraExtension`), from the directory of the executable, or from the project in the editor.
+  Hence the packaging copies `CameraServerExtension.gdextension` and `libcameraserver-extension.windows.dll` next to the executable, and puts a `.gdignore` in `build/` so that Godot does not try to load the extension of the Windows package on the other platforms.
+  The formats of the extension's feeds are reached by name (the methods of `CameraFeed` do not reach them), and Windows calls YUYV "YUY2".
+  Without the extension, or if Windows denies the camera, the game tells so.
+  Drop the extension once Godot supports the camera on Windows itself ([godotengine/godot#108538]).
+* **macOS:** The app is universal and runs on the Intel and the Apple Silicon Macs. We stay with ONNX Runtime 1.19, the last version whose libraries for macOS run on macOS 11 (from 1.20 on, they need macOS 13.3, and from 1.24 on, there is none for the Intel Macs). On a macOS older than 11, the game reports that the hand tracking failed. The app is signed ad hoc and not notarized, so the players open it the first time with a right click and Open. The camera on macOS lists no formats and delivers its frames as two planes (Y and CbCr), which `HandVisionService` converts to RGB itself (`YcbcrConverter`). On the first start, macOS asks for the permission to use the camera; the vision tries again every few seconds to start the camera until the players allow it.
+
+[CameraServerExtension]: https://github.com/j20001970/godot-cameraserver-extension
+[godotengine/godot#108538]: https://github.com/godotengine/godot/pull/108538
 When you upgrade Godot, regenerate its license texts with `$GODOT --headless --script dev/write_godot_licenses.gd`.
 
 ## Commit messages

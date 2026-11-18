@@ -5,7 +5,7 @@ This covers the code, the shaders, the scenes, the sounds (synthesized in code) 
 
 The game includes, or is built with, the following third-party components.
 Each keeps its own license.
-The release packages carry all the license texts in the directory `licenses/`.
+The release packages carry all the license texts in the directory `licenses/`; the Windows package also the license text of CameraServerExtension.
 
 ## Distributed with the game
 
@@ -31,11 +31,21 @@ The .NET build of Godot bundles the .NET runtime with the exported game.
 
 ### ONNX Runtime
 
-* Package: `Microsoft.ML.OnnxRuntime` 1.24.4
+* Package: `Microsoft.ML.OnnxRuntime` 1.19.2
 * License: MIT
 * Copyright (c) Microsoft Corporation
 * Source: https://github.com/microsoft/onnxruntime
 * License text and third-party notices: included in the release packages as `licenses/onnxruntime/LICENSE` and `licenses/onnxruntime/ThirdPartyNotices.txt`
+
+### CameraServerExtension (only in the Windows package)
+
+* Version: 2026.03.27 (the prebuilt Windows x86_64 library of the release)
+* License: MIT
+* Copyright (c) 2024-present Jason Kuo
+* Source: https://github.com/j20001970/godot-cameraserver-extension
+* License text: [addons/CameraServerExtension/LICENSE](addons/CameraServerExtension/LICENSE)
+
+Godot 4.6 implements no camera on Windows; the extension provides it there, with Media Foundation.
 
 ### YOLOX-Body-Head-Hand (hand detection)
 
