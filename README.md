@@ -67,10 +67,6 @@ The packages for Windows and macOS are built, but not yet tested on those system
 
 [CameraServerExtension]: https://github.com/j20001970/godot-cameraserver-extension
 
-## How to start the game
-
-*Coming soon.*
-
 ## License
 
 Splash 'n' Splat is licensed under the [MIT License](LICENSE).
