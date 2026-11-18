@@ -1,5 +1,7 @@
 # Splash 'n' Splat
 
+![Splash 'n' Splat: flying to the North Pole, then throwing snowballs at the polar bears and ducking theirs](docs/splash-n-splat.gif)
+
 **Splash 'n' Splat is a snowball shooting gallery for children which they play with their hands in front of a webcam.**
 
 Cheerful animals (polar bears, walruses, reindeer, foxes and many more) pop up from behind snowdrifts, igloos, rocks and trees.
